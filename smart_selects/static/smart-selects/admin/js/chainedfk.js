@@ -98,6 +98,7 @@
                     }
                     if (this_val!=prevID) {
                        prevID = this_val;
+                       start_value = $(localID).data("value");
                        fill_field(this_val, start_value, localID, url, empty_label, auto_choose);
                     }
                  });
