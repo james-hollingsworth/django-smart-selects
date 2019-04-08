@@ -84,22 +84,33 @@
             },
             init: function (chainfield, url, id, init_value, empty_label, auto_choose) {
                 var val, fill_field = this.fill_field;
+                var parent_id = chainfield.slice(1);
 
                 if (!$(chainfield).hasClass("chained")) {
                     val = $(chainfield).val();
                     fill_field(val, init_value, id, url, empty_label, auto_choose);
                 }
-                $("body").on('DOMSubtreeModified', "#select2-"+chainfield.slice(1)+"-container", function () {
+                // Reset the previous ID when child records are changed
+                $('#change_'+parent_id+', #add_'+parent_id+', #delete_'+parent_id).click( function($e){
+                   prevID = null;
+                });
+
+                $("body").on('DOMSubtreeModified', "#select2-"+parent_id+"-container", function () {
                     var prefix, start_value, localID = id;
                     var this_val = prevID;
                     var this_title = $(this).attr("title");
+
                     if (typeof this_title != "undefined") {
-                       this_val = $(chainfield+' option').filter(function () { return $(this).html() == this_title; }).val();
+                       this_val = $(chainfield+' option').filter(function () { return $(this).text() == this_title; }).val();
                     }
                     if (this_val!=prevID) {
                        prevID = this_val;
                        start_value = $(localID).data("value");
                        fill_field(this_val, start_value, localID, url, empty_label, auto_choose);
+                       // Reset the previous ID when a new child record is added
+                       $(id).siblings('a').on('click', function($e){
+                          prevID = null;
+                       });
                     }
                  });
 
